@@ -1,0 +1,38 @@
+version: '3.8'
+
+services: 
+  crud_app_service:
+    container_name: crud_app_service
+    image: crud_app_service:1.0
+    build: .
+    ports: 
+      - "8080:8080"
+    expose: 
+      - 8080
+    depends_on: 
+      - postgresql_service
+    links: 
+      - postgresql_service
+    environment: 
+      DB_HOST: postgresql_service
+    env_file: .env
+    networks: 
+      - crud_app_network
+
+  postgresql_service:
+    container_name: postgresql_service
+    image: postgres:latest
+    ports: 
+      - "5432:5432"
+    expose: 
+      - 5432
+    environment: 
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASS}
+      POSTGRES_HOST: postgresql_service
+      POSTGRES_PORT: ${DB_PORT}
+      POSTGRES_DB: ${DB_NAME}
+
+networks: 
+  crud_app_network:
+    driver: bridge
